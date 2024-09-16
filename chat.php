@@ -187,6 +187,37 @@ if (!isset($_SESSION['user_id'])) {
             conn.send('typing:stop');
         }, 3000); // Para de notificar após 3 segundos de inatividade
     }
+
+    function loadMessages() {
+    fetch('load_messages.php')
+        .then(response => response.json())
+        .then(data => {
+            var chat = document.getElementById('chat');
+            data.messages.forEach(msg => {
+                var message = document.createElement('div');
+                message.classList.add('message');
+                // Processa e exibe a mensagem
+                var userName = msg.user_name;
+                var userMessage = msg.message;
+                var timestamp = new Date(msg.timestamp).toLocaleTimeString();
+
+                if (userName === '<?php echo $_SESSION['name']; ?>') {
+                    message.classList.add('sent'); // Alinha à direita
+                    message.innerHTML = `<span class="message-text">${userMessage}</span><br><span class="message-time">${timestamp}</span>`;
+                } else {
+                    message.classList.add('received'); // Alinha à esquerda
+                    message.innerHTML = `<span class="message-user">${userName}</span><br><span class="message-text">${userMessage}</span><br><span class="message-time">${timestamp}</span>`;
+                }
+
+                chat.appendChild(message);
+            });
+            chat.scrollTop = chat.scrollHeight; // Rolagem automática para a última mensagem
+        });
+}
+
+window.onload = loadMessages;
+
+
 </script>
 
 
